@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crash Alert</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827; background: #f9fafb; margin: 0; padding: 24px;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 640px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px;">
+    <tr>
+      <td style="padding: 24px;">
+        <h1 style="margin: 0 0 8px; font-size: 20px; color: #b91c1c;">Application Crash Alert</h1>
+        <p style="margin: 0 0 16px; color: #6b7280;">The service encountered a fatal error and may have stopped.</p>
+
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><strong>Service</strong></td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">{serviceName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><strong>Environment</strong></td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">{environment}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><strong>Timestamp</strong></td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">{timestamp}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><strong>Request ID</strong></td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">{requestId}</td>
+          </tr>
+        </table>
+
+        <h2 style="margin: 0 0 8px; font-size: 16px;">Error</h2>
+        <pre style="white-space: pre-wrap; word-break: break-word; background: #fef2f2; color: #991b1b; padding: 12px; border-radius: 6px; border: 1px solid #fecaca; margin: 0 0 16px;">{errorMessage}</pre>
+
+        <h2 style="margin: 0 0 8px; font-size: 16px;">Stack Trace</h2>
+        <pre style="white-space: pre-wrap; word-break: break-word; background: #f3f4f6; color: #374151; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb; margin: 0;">{errorStack}</pre>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
