@@ -11,7 +11,7 @@ const log = getLogger('app');
 function registerFatalHandlers(): void {
   const handleFatal = async (err: unknown) => {
     // Only send crash alerts in non-local environments
-    if (env.ENVIRONMENT !== 'local') {
+    if (env.NODE_ENV !== 'local') {
       await sendCrashAlertSafe(getNotificationService(), err);
     }
     log.fatal({ ...formatLogError(err), msg: 'Fatal process error' });
@@ -72,7 +72,7 @@ main().catch(async (err: unknown) => {
   try {
     loadEnv();
     // Only send crash alerts in non-local environments
-    if (env.ENVIRONMENT !== 'local') {
+    if (env.NODE_ENV !== 'local') {
       await sendCrashAlertSafe(getNotificationService(), err);
     }
   } catch {
