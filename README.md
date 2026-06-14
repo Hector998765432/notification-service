@@ -72,6 +72,18 @@ Flujo de deploy: `pnpm install` → `pnpm build` → `pnpm start`.
 
 ## Endpoints
 
-| Método | Ruta      | Descripción              |
-|--------|-----------|--------------------------|
-| GET    | `/health` | Health check (Railway)   |
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/health` | Health check (Railway) |
+| POST | `/notifications` | Enviar notificaciones |
+| GET | `/cron-jobs` | Listar cron jobs (paginado) |
+| POST | `/cron-jobs` | Crear cron job |
+| GET | `/cron-jobs/:id` | Detalle de cron job |
+| PATCH | `/cron-jobs/:id` | Editar cron job |
+| DELETE | `/cron-jobs/:id` | Eliminar cron job |
+| POST | `/cron-jobs/:id/pause` | Pausar cron job |
+| POST | `/cron-jobs/:id/resume` | Reanudar cron job |
+| POST | `/cron-jobs/:id/run` | Ejecutar cron job manualmente |
+| GET | `/cron-jobs/:id/runs` | Historial de ejecuciones |
+
+Rutas bajo `/notifications` y `/cron-jobs` requieren header `x-api-key`. Ver [`src/jobs/README.md`](src/jobs/README.md) para la guia completa de cron jobs.
