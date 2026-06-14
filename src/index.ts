@@ -1,15 +1,19 @@
 import { createApp } from '@/app.js';
-import { getNotificationService } from '@/bootstrap/create-services.js';
+import { getDynamicCronScheduler, getNotificationService } from '@/bootstrap/create-services.js';
 import { loadEnv, getEnv } from '@/config/env.js';
 import { formatLogError } from '@/logging/format-log-error.js';
 import { getLogger } from '@/logging/logger.js';
 import { sendCrashAlertSafe } from '@/notifications/crash-alert.service.js';
 
+const env = getEnv();
 const log = getLogger('app');
 
 function registerFatalHandlers(): void {
   const handleFatal = async (err: unknown) => {
-    await sendCrashAlertSafe(getNotificationService(), err);
+    // Only send crash alerts in non-local environments
+    if (env.ENVIRONMENT !== 'local') {
+      await sendCrashAlertSafe(getNotificationService(), err);
+    }
     log.fatal({ ...formatLogError(err), msg: 'Fatal process error' });
     process.exit(1);
   };
@@ -29,6 +33,9 @@ async function main(): Promise<void> {
   const env = getEnv();
 
   const app = createApp();
+  const scheduler = getDynamicCronScheduler();
+  await scheduler.start();
+
   const server = app.listen(env.PORT, () => {
     log.info({ port: env.PORT, msg: 'HTTP server listening' });
   });
@@ -36,6 +43,7 @@ async function main(): Promise<void> {
   const shutdown = async (signal: string) => {
     try {
       log.info({ signal, msg: 'Shutting down' });
+      await scheduler.stop();
       await new Promise<void>((resolve, reject) => {
         server.close((err) => {
           if (err) reject(err);
@@ -63,7 +71,10 @@ async function main(): Promise<void> {
 main().catch(async (err: unknown) => {
   try {
     loadEnv();
-    await sendCrashAlertSafe(getNotificationService(), err);
+    // Only send crash alerts in non-local environments
+    if (env.ENVIRONMENT !== 'local') {
+      await sendCrashAlertSafe(getNotificationService(), err);
+    }
   } catch {
     // Env or alert unavailable before bootstrap completed.
   }

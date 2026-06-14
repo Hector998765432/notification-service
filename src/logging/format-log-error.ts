@@ -21,6 +21,19 @@ export function formatLogError(err: unknown): Record<string, unknown> {
     errMessage: typeof e.message === 'string' && e.message.length > 0 ? e.message : String(err),
   };
 
+  const cause = (e as Error & { cause?: unknown }).cause;
+  if (cause != null) {
+    if (typeof cause === 'object' && cause !== null) {
+      const c = cause as { message?: string; code?: string; hint?: string; details?: string };
+      if (typeof c.message === 'string') out.errCauseMessage = c.message;
+      if (typeof c.code === 'string') out.errCauseCode = c.code;
+      if (typeof c.hint === 'string') out.errCauseHint = c.hint;
+      if (typeof c.details === 'string') out.errCauseDetails = c.details;
+    } else {
+      out.errCause = String(cause);
+    }
+  }
+
   if (typeof e.stack === 'string') {
     out.errStack = e.stack;
   }
