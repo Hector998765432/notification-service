@@ -6,7 +6,6 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   NODE_ENV: z.enum(['development', 'production', 'local']).default('development'),
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
-  ENVIRONMENT: z.enum(['development', 'production', 'local']).default('development'),
   SERVICE_API_KEY: z.string().min(1),
   EMAIL_FROM: z.string().email(),
   EMAIL_PROVIDER: z.enum(['resend']).default('resend'),
