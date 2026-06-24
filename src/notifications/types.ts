@@ -1,6 +1,7 @@
 import type { EmailTemplateName } from '@/email/types.js';
+import type { WhatsAppTemplateName } from '@/whatsapp/templates.js';
 
-export type NotificationChannel = 'email';
+export type NotificationChannel = 'email' | 'whatsapp';
 
 export type EmailNotificationConfig = {
   to: string[];
@@ -11,9 +12,16 @@ export type EmailNotificationConfig = {
   templateVars?: Record<string, unknown>;
 };
 
+export type WhatsAppNotificationConfig = {
+  to: string[];
+  template: WhatsAppTemplateName;
+  templateVars?: Record<string, unknown>;
+};
+
 export type NotificationPayload = {
   channels: NotificationChannel[];
   email?: EmailNotificationConfig;
+  whatsapp?: WhatsAppNotificationConfig;
 };
 
 export type NotificationChannelResult = {

@@ -31,7 +31,7 @@ export class JobRunner {
   async run(jobId: string, triggeredBy: CronJobTrigger = 'schedule'): Promise<JobRunResult> {
     const claimedJob = await this.options.repository.claimJob(jobId, this.options.workerId);
 
-    if (!claimedJob) {
+    if (!claimedJob?.id) {
       log.debug({ jobId, workerId: this.options.workerId, msg: 'Cron job lease not acquired' });
       return { status: 'skipped' };
     }

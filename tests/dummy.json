@@ -1,0 +1,39 @@
+{
+    "operators": [
+        {
+            "name": "Hector Galvan",
+            "phone": "+524424605508",
+            "vin": "22000107"
+        },
+        {
+            "name": "Aaron Damaian",
+            "phone": "+524428382946",
+            "vin": "22000110"
+        },
+        {
+            "name": "Pabel Angulo",
+            "phone": "+523331771655",
+            "vin": "22000111"
+        },
+        {
+            "name": "Angel Damian",
+            "phone": "+524421754919",
+            "vin": "22000112"
+        },
+        {
+            "name": "Josue Rojas",
+            "phone": "+524425714070",
+            "vin": "402101419"
+        },
+        {
+            "name": "Gabriela Galvan",
+            "phone": "+524426069213",
+            "vin": "402101423"
+        },
+        {
+            "name": "Minerva Cedillo",
+            "phone": "+524428247095",
+            "vin": "WBAJU4100N9L28176"
+        }
+    ]
+}

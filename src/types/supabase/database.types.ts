@@ -318,6 +318,33 @@ export interface Database {
         };
         Relationships: [];
       };
+      whatsapp_message_context: {
+        Row: {
+          id: string;
+          phone: string;
+          serial_ending: string;
+          template: string;
+          message_sid: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          phone: string;
+          serial_ending: string;
+          template: string;
+          message_sid?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          phone?: string;
+          serial_ending?: string;
+          template?: string;
+          message_sid?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

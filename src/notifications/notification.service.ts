@@ -1,12 +1,16 @@
 import { AppError } from '@/errors/AppError.js';
+import type { Env } from '@/config/env.js';
 import type { EmailProvider } from '@/email/email-provider.js';
 import { EmailChannelHandler } from '@/notifications/channels/email-channel.js';
+import { WhatsAppChannelHandler } from '@/notifications/channels/whatsapp-channel.js';
 import type { NotificationChannelHandler } from '@/notifications/channels/notification-channel.js';
 import type {
   NotificationChannel,
   NotificationPayload,
   NotificationResult,
 } from '@/notifications/types.js';
+import type { WhatsAppContextRepository } from '@/persistence/repositories/whatsapp-context.repository.js';
+import type { WhatsAppProvider } from '@/whatsapp/whatsapp-provider.js';
 
 export class NotificationService {
   private readonly handlers: Map<NotificationChannel, NotificationChannelHandler>;
@@ -64,6 +68,8 @@ export class NotificationService {
     switch (channel) {
       case 'email':
         return payload.email;
+      case 'whatsapp':
+        return payload.whatsapp;
       default: {
         const unsupported: never = channel;
         throw new AppError(`Unsupported channel: ${unsupported}`, 400, 'UNSUPPORTED_CHANNEL');
@@ -72,6 +78,14 @@ export class NotificationService {
   }
 }
 
-export function createNotificationService(emailProvider: EmailProvider): NotificationService {
-  return new NotificationService([new EmailChannelHandler(emailProvider)]);
+export function createNotificationService(
+  emailProvider: EmailProvider,
+  whatsAppProvider: WhatsAppProvider,
+  env: Env,
+  whatsAppContextRepository?: WhatsAppContextRepository,
+): NotificationService {
+  return new NotificationService([
+    new EmailChannelHandler(emailProvider),
+    new WhatsAppChannelHandler(whatsAppProvider, env, whatsAppContextRepository),
+  ]);
 }
