@@ -114,7 +114,9 @@ export class DynamicCronScheduler {
     const task = cron.createTask(
       job.schedule,
       () => {
-        void this.options.runner.run(job.id, 'schedule');
+        void this.options.runner.run(job.id, 'schedule').catch((err) => {
+          log.error({ err, jobId: job.id, jobKey: job.key, msg: 'Scheduled cron job run failed' });
+        });
       },
       {
         name: job.key,

@@ -85,5 +85,8 @@ Flujo de deploy: `pnpm install` → `pnpm build` → `pnpm start`.
 | POST | `/cron-jobs/:id/resume` | Reanudar cron job |
 | POST | `/cron-jobs/:id/run` | Ejecutar cron job manualmente |
 | GET | `/cron-jobs/:id/runs` | Historial de ejecuciones |
+| POST | `/webhooks/twilio/whatsapp` | Webhook de WhatsApp entrante (Twilio) |
 
 Rutas bajo `/notifications` y `/cron-jobs` requieren header `x-api-key`. Ver [`src/jobs/README.md`](src/jobs/README.md) para la guia completa de cron jobs.
+
+El webhook `/webhooks/twilio/whatsapp` no usa `x-api-key`: se autentica validando el header `X-Twilio-Signature` (configurable con `TWILIO_VALIDATE_SIGNATURE`). Configura su URL publica en la consola de Twilio. Al recibir la palabra clave `REVISAR`, consulta el contrato en Odoo por el serial enviado y responde por WhatsApp.

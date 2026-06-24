@@ -71,7 +71,6 @@ async function main(): Promise<void> {
 main().catch(async (err: unknown) => {
   try {
     loadEnv();
-    // Only send crash alerts in non-local environments
     if (env.NODE_ENV !== 'local') {
       await sendCrashAlertSafe(getNotificationService(), err);
     }

@@ -12,6 +12,8 @@ import type {
 import type { CronJobRunStatus, CronJobTrigger } from '@/types/jobs/index.js';
 import type { ReadRepository, WriteRepository } from '@/persistence/repositories/base.repository.js';
 import { RepositoryError } from '@/persistence/repositories/repository-error.js';
+import { getLogger } from '@/logging/logger.js';
+const log = getLogger('persistence.repositories.cron-job-repository');
 
 export interface CompleteCronJobRunInput {
   jobId: string;
@@ -51,7 +53,7 @@ export class CronJobRepository
 
   async findById(id: string): Promise<CronJobRow | null> {
     const { data, error } = await this.client.from('cron_jobs').select('*').eq('id', id).maybeSingle();
-
+    log.debug({ id, data, error }, 'findById');
     if (error) {
       throw new RepositoryError(`Unable to load cron job ${id}`, error);
     }
@@ -187,10 +189,25 @@ export class CronJobRepository
       throw new RepositoryError(`Unable to claim cron job ${jobId}`, error);
     }
 
+    // PostgREST may return an empty composite row when the UPDATE matches no rows.
+    if (!data?.id) {
+      return null;
+    }
+
     return data;
   }
 
   async createRun(input: CronJobRunInsert): Promise<CronJobRunRow> {
+    log.info({ input }, 'createRun');
+    const job = await this.findById(input.job_id);
+    if (!job) {
+      throw new RepositoryError(`Job ${input.job_id} not found`);
+    }
+
+    if (!input.worker_id.trim()) {
+      throw new RepositoryError('worker_id is required');
+    }
+
     const { data, error } = await this.client.from('cron_job_runs').insert(input).select('*').single();
 
     if (error) {

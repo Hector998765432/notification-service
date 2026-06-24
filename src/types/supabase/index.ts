@@ -12,4 +12,7 @@ export type {
   ProfileInsert,
   ProfileRow,
   ProfileUpdate,
+  WhatsAppMessageContextInsert,
+  WhatsAppMessageContextRow,
+  WhatsAppMessageContextUpdate,
 } from '@/types/supabase/tables.js';

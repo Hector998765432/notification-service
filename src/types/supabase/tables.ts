@@ -17,3 +17,7 @@ export type CronJobUpdate = PublicTables['cron_jobs']['Update'];
 export type CronJobRunRow = PublicTables['cron_job_runs']['Row'];
 export type CronJobRunInsert = PublicTables['cron_job_runs']['Insert'];
 export type CronJobRunUpdate = PublicTables['cron_job_runs']['Update'];
+
+export type WhatsAppMessageContextRow = PublicTables['whatsapp_message_context']['Row'];
+export type WhatsAppMessageContextInsert = PublicTables['whatsapp_message_context']['Insert'];
+export type WhatsAppMessageContextUpdate = PublicTables['whatsapp_message_context']['Update'];

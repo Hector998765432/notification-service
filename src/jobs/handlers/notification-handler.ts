@@ -1,5 +1,24 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+
 import { getLogger } from '@/logging/logger.js';
 import type { CronJobHandler } from '@/types/jobs/index.js';
+
+type OperatorsFile = {
+  operators: Array<{
+    name: string;
+    phone: string;
+    vin: string;
+  }>;
+};
+
+const operatorsFilePath = path.resolve(process.cwd(), 'tests/dummy.json');
+
+const getOperators = async (): Promise<OperatorsFile> => {
+  const raw = await readFile(operatorsFilePath, 'utf8');
+  return JSON.parse(raw) as OperatorsFile;
+};
+
 
 const log = getLogger('jobs.handlers.notification');
 export const notificationHandler: CronJobHandler = async ({
@@ -15,6 +34,8 @@ export const notificationHandler: CronJobHandler = async ({
     return;
   }
 
+  const operators = await getOperators();
+
   log.info({
     jobKey: job.key,
     taskKey: job.task_key,
@@ -26,7 +47,14 @@ export const notificationHandler: CronJobHandler = async ({
     msg: 'Notification handler started',
   });
 
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  for (const operator of operators.operators) {
+    log.info({
+      triggeredBy: operator.name,
+      operator,
+      msg: `Sending notification to ${operator.name} - ${operator.phone}`,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
 
   log.info({
     jobKey: job.key,
