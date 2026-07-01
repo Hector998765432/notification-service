@@ -15,4 +15,11 @@ export type {
   WhatsAppMessageContextInsert,
   WhatsAppMessageContextRow,
   WhatsAppMessageContextUpdate,
+  TemplateClassificationInsert,
+  TemplateClassificationRow,
+  TemplateClassificationUpdate,
+  NotificationTemplateInsert,
+  NotificationTemplateRow,
+  NotificationTemplateUpdate,
+  NotificationTemplateChannel,
 } from '@/types/supabase/tables.js';

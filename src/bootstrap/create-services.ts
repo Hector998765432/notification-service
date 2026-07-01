@@ -4,6 +4,8 @@ import type { EmailProvider } from '@/email/email-provider.js';
 import { createWhatsAppProvider } from '@/whatsapp/create-whatsapp-provider.js';
 import type { WhatsAppProvider } from '@/whatsapp/whatsapp-provider.js';
 import { WhatsAppContextRepository } from '@/persistence/repositories/whatsapp-context.repository.js';
+import { TemplateClassificationRepository } from '@/persistence/repositories/template-classification.repository.js';
+import { NotificationTemplateRepository } from '@/persistence/repositories/notification-template.repository.js';
 import {
   createNotificationService,
   type NotificationService,
@@ -17,10 +19,22 @@ import {
   createCronJobService,
   type CronJobService,
 } from '@/jobs/cron-job.service.js';
+import {
+  createTemplateClassificationService,
+  type TemplateClassificationService,
+} from '@/templates/template-classification.service.js';
+import {
+  createNotificationTemplateService,
+  type NotificationTemplateService,
+} from '@/templates/notification-template.service.js';
 
 let emailProvider: EmailProvider | null = null;
 let whatsAppProvider: WhatsAppProvider | null = null;
 let whatsAppContextRepository: WhatsAppContextRepository | null = null;
+let templateClassificationRepository: TemplateClassificationRepository | null = null;
+let notificationTemplateRepository: NotificationTemplateRepository | null = null;
+let templateClassificationService: TemplateClassificationService | null = null;
+let notificationTemplateService: NotificationTemplateService | null = null;
 let notificationService: NotificationService | null = null;
 let dynamicCronScheduler: DynamicCronScheduler | null = null;
 let cronJobService: CronJobService | null = null;
@@ -46,6 +60,39 @@ export function getWhatsAppContextRepository(): WhatsAppContextRepository {
   return whatsAppContextRepository;
 }
 
+export function getTemplateClassificationRepository(): TemplateClassificationRepository {
+  if (!templateClassificationRepository) {
+    templateClassificationRepository = new TemplateClassificationRepository();
+  }
+  return templateClassificationRepository;
+}
+
+export function getNotificationTemplateRepository(): NotificationTemplateRepository {
+  if (!notificationTemplateRepository) {
+    notificationTemplateRepository = new NotificationTemplateRepository();
+  }
+  return notificationTemplateRepository;
+}
+
+export function getTemplateClassificationService(): TemplateClassificationService {
+  if (!templateClassificationService) {
+    templateClassificationService = createTemplateClassificationService(
+      getTemplateClassificationRepository(),
+    );
+  }
+  return templateClassificationService;
+}
+
+export function getNotificationTemplateService(): NotificationTemplateService {
+  if (!notificationTemplateService) {
+    notificationTemplateService = createNotificationTemplateService(
+      getNotificationTemplateRepository(),
+      getTemplateClassificationRepository(),
+    );
+  }
+  return notificationTemplateService;
+}
+
 export function getNotificationService(): NotificationService {
   if (!notificationService) {
     notificationService = createNotificationService(
@@ -53,6 +100,7 @@ export function getNotificationService(): NotificationService {
       getWhatsAppProvider(),
       getEnv(),
       getWhatsAppContextRepository(),
+      getNotificationTemplateService(),
     );
   }
   return notificationService;

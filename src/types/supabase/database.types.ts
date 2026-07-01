@@ -345,6 +345,72 @@ export interface Database {
         };
         Relationships: [];
       };
+      template_classifications: {
+        Row: {
+          id: string;
+          name: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      notification_templates: {
+        Row: {
+          id: string;
+          classification_id: string;
+          name: string;
+          channel: 'email' | 'whatsapp';
+          is_active: boolean;
+          html_body: string | null;
+          default_subject: string | null;
+          content_sid: string | null;
+          variables: Json | null;
+          correlation_var: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          classification_id: string;
+          name: string;
+          channel: 'email' | 'whatsapp';
+          is_active?: boolean;
+          html_body?: string | null;
+          default_subject?: string | null;
+          content_sid?: string | null;
+          variables?: Json | null;
+          correlation_var?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          classification_id?: string;
+          name?: string;
+          channel?: 'email' | 'whatsapp';
+          is_active?: boolean;
+          html_body?: string | null;
+          default_subject?: string | null;
+          content_sid?: string | null;
+          variables?: Json | null;
+          correlation_var?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

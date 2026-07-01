@@ -1,13 +1,4 @@
 import { z } from 'zod';
-import { WHATSAPP_TEMPLATES, type WhatsAppTemplateName } from '@/whatsapp/templates.js';
-
-const emailTemplateSchema = z.enum(['crash-alert']);
-
-const whatsAppTemplateNames = Object.keys(WHATSAPP_TEMPLATES) as [
-  WhatsAppTemplateName,
-  ...WhatsAppTemplateName[],
-];
-const whatsAppTemplateSchema = z.enum(whatsAppTemplateNames);
 
 // Accepts E.164 (+5215512345678) with an optional `whatsapp:` prefix.
 const whatsAppRecipientSchema = z
@@ -19,13 +10,13 @@ const emailConfigSchema = z.object({
   subject: z.string().min(1).optional(),
   html: z.string().min(1).optional(),
   text: z.string().optional(),
-  template: emailTemplateSchema.optional(),
+  template: z.string().min(1).optional(),
   templateVars: z.record(z.string(), z.unknown()).optional(),
 });
 
 const whatsAppConfigSchema = z.object({
   to: z.array(whatsAppRecipientSchema).min(1),
-  template: whatsAppTemplateSchema,
+  template: z.string().min(1),
   templateVars: z.record(z.string(), z.unknown()).optional(),
 });
 

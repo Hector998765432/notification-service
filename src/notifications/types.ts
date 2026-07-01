@@ -1,6 +1,3 @@
-import type { EmailTemplateName } from '@/email/types.js';
-import type { WhatsAppTemplateName } from '@/whatsapp/templates.js';
-
 export type NotificationChannel = 'email' | 'whatsapp';
 
 export type EmailNotificationConfig = {
@@ -8,13 +5,13 @@ export type EmailNotificationConfig = {
   subject?: string;
   html?: string;
   text?: string;
-  template?: EmailTemplateName;
+  template?: string;
   templateVars?: Record<string, unknown>;
 };
 
 export type WhatsAppNotificationConfig = {
   to: string[];
-  template: WhatsAppTemplateName;
+  template: string;
   templateVars?: Record<string, unknown>;
 };
 
