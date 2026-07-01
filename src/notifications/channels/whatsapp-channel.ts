@@ -1,4 +1,3 @@
-import type { Env } from '@/config/env.js';
 import { getLogger } from '@/logging/logger.js';
 import type { NotificationChannelHandler } from '@/notifications/channels/notification-channel.js';
 import type {
@@ -6,7 +5,7 @@ import type {
   WhatsAppNotificationConfig,
 } from '@/notifications/types.js';
 import type { WhatsAppContextRepository } from '@/persistence/repositories/whatsapp-context.repository.js';
-import { buildContentVariables, getCorrelationValue } from '@/whatsapp/templates.js';
+import type { NotificationTemplateService } from '@/templates/notification-template.service.js';
 import type { WhatsAppProvider } from '@/whatsapp/whatsapp-provider.js';
 
 const log = getLogger('notifications.whatsapp');
@@ -16,7 +15,7 @@ export class WhatsAppChannelHandler implements NotificationChannelHandler {
 
   constructor(
     private readonly whatsAppProvider: WhatsAppProvider,
-    private readonly env: Env,
+    private readonly templateService: NotificationTemplateService,
     private readonly contextRepository?: WhatsAppContextRepository,
   ) {}
 
@@ -32,12 +31,8 @@ export class WhatsAppChannelHandler implements NotificationChannelHandler {
       }
 
       const templateVars = whatsAppConfig.templateVars ?? {};
-      const { contentSid, contentVariables } = buildContentVariables(
-        whatsAppConfig.template,
-        templateVars,
-        this.env,
-      );
-      const correlationValue = getCorrelationValue(whatsAppConfig.template, templateVars);
+      const { contentSid, contentVariables, correlationValue } =
+        await this.templateService.resolveWhatsAppTemplate(whatsAppConfig.template, templateVars);
 
       const providerIds: string[] = [];
       for (const recipient of whatsAppConfig.to) {
@@ -85,7 +80,6 @@ export class WhatsAppChannelHandler implements NotificationChannelHandler {
         messageSid: messageSid ?? null,
       });
     } catch (err) {
-      // Persistence is best-effort; never fail the send because of it.
       log.warn({
         recipient,
         template,

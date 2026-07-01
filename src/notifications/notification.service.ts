@@ -10,6 +10,7 @@ import type {
   NotificationResult,
 } from '@/notifications/types.js';
 import type { WhatsAppContextRepository } from '@/persistence/repositories/whatsapp-context.repository.js';
+import type { NotificationTemplateService } from '@/templates/notification-template.service.js';
 import type { WhatsAppProvider } from '@/whatsapp/whatsapp-provider.js';
 
 export class NotificationService {
@@ -81,11 +82,12 @@ export class NotificationService {
 export function createNotificationService(
   emailProvider: EmailProvider,
   whatsAppProvider: WhatsAppProvider,
-  env: Env,
-  whatsAppContextRepository?: WhatsAppContextRepository,
+  _env: Env,
+  whatsAppContextRepository: WhatsAppContextRepository | undefined,
+  templateService: NotificationTemplateService,
 ): NotificationService {
   return new NotificationService([
-    new EmailChannelHandler(emailProvider),
-    new WhatsAppChannelHandler(whatsAppProvider, env, whatsAppContextRepository),
+    new EmailChannelHandler(emailProvider, templateService),
+    new WhatsAppChannelHandler(whatsAppProvider, templateService, whatsAppContextRepository),
   ]);
 }

@@ -30,7 +30,6 @@ const schema = z.object({
     .transform(normalizeWhatsAppFrom)
     .optional(),
   TWILIO_MESSAGING_SERVICE_SID: z.string().min(1).optional(),
-  TWILIO_TEMPLATE_CONTRACT_STATUS_REVIEW: z.string().min(1).optional(),
   TWILIO_VALIDATE_SIGNATURE: z.coerce.boolean().default(true),
   TWILIO_WEBHOOK_BASE_URL: z.string().url().optional(),
   WHATSAPP_REVISAR_KEYWORD: z.string().min(1).default('REVISAR'),

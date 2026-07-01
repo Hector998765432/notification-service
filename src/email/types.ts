@@ -13,5 +13,3 @@ export type EmailSendResult = {
   id?: string;
   provider: EmailProviderName;
 };
-
-export type EmailTemplateName = 'crash-alert';
