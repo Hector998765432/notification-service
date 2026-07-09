@@ -106,7 +106,29 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'company_members_company_id_fkey';
+            columns: ['company_id'];
+            isOneToOne: false;
+            referencedRelation: 'companies';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'company_members_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'company_member_units_company_member_id_fkey';
+            columns: ['id'];
+            isOneToOne: false;
+            referencedRelation: 'company_member_units';
+            referencedColumns: ['company_member_id'];
+          },
+        ];
       };
       company_roles: {
         Row: {
@@ -378,6 +400,7 @@ export interface Database {
           content_sid: string | null;
           variables: Json | null;
           correlation_var: string | null;
+          bulk: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -392,6 +415,7 @@ export interface Database {
           content_sid?: string | null;
           variables?: Json | null;
           correlation_var?: string | null;
+          bulk?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -400,6 +424,7 @@ export interface Database {
           classification_id?: string;
           name?: string;
           channel?: 'email' | 'whatsapp';
+          bulk?: boolean;
           is_active?: boolean;
           html_body?: string | null;
           default_subject?: string | null;

@@ -57,3 +57,13 @@ export interface OdooFleetVehicleLogContract {
   x_studio_date_field_43a_1j63hd5ea: string | false | null
   x_studio_fecha_de_finalizacin_de_contrato: string | false | null
 }
+
+export type OdooFleetVehicleLogContractExpiring = Pick<
+  OdooFleetVehicleLogContract,
+  | 'cost_subtype_id'
+  | 'expiration_date'
+  | 'vehicle_id'
+  | 'purchaser_id'
+  | 'x_studio_numero_de_chasis_de_la_unidad'
+  | 'days_left'
+>;

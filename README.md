@@ -76,6 +76,7 @@ Flujo de deploy: `pnpm install` → `pnpm build` → `pnpm start`.
 |--------|------|-------------|
 | GET | `/health` | Health check (Railway) |
 | POST | `/notifications` | Enviar notificaciones |
+| POST | `/notifications/whatsapp/bulk` | Enviar múltiples notificaciones WhatsApp (rate-limited) |
 | GET | `/cron-jobs` | Listar cron jobs (paginado) |
 | POST | `/cron-jobs` | Crear cron job |
 | GET | `/cron-jobs/:id` | Detalle de cron job |

@@ -1,6 +1,13 @@
 import { getOdooClient, type OdooJsonRpcClient } from '@/db/odoo/odoo.js';
 import type { OdooFleetVehicle } from '@/types/odoo/fleets/vehicle/vehicle.js';
-import type { OdooFleetVehicleLogContract } from '@/types/odoo/fleets/log.contract/log.contract.js';
+import type {
+  OdooFleetVehicleLogContract,
+  OdooFleetVehicleLogContractExpiring,
+} from '@/types/odoo/fleets/log.contract/log.contract.js';
+
+function isExpiringDaysLeft(daysLeft: number): boolean {
+  return daysLeft === 30 || daysLeft === 1 || daysLeft <= 0;
+}
 
 export interface OdooFleetQueryOptions {
   odooPartnerId?: number;
@@ -80,6 +87,32 @@ export class OdooFleetRepository {
       }
     );
   }
+
+  async getExpiringContracts(): Promise<OdooFleetVehicleLogContractExpiring[]> {
+    const domain = [
+      ['active', '=', true],
+      ['state', '=', 'open'],
+    ];
+
+    const contracts = await this.client.call<OdooFleetVehicleLogContractExpiring[]>(
+      'fleet.vehicle.log.contract',
+      'search_read',
+      [domain],
+      {
+        fields: [
+          'cost_subtype_id',
+          'expiration_date',
+          'vehicle_id',
+          'purchaser_id',
+          'x_studio_numero_de_chasis_de_la_unidad',
+          'days_left',
+        ],
+        limit: 10000,
+      }
+    );
+
+    return contracts.filter((contract) => isExpiringDaysLeft(contract.days_left));
+  }
 }
 
 export const odooFleetRepository = new OdooFleetRepository();
@@ -98,4 +131,8 @@ export async function getContractVehiclesStats(
   options?: OdooFleetQueryOptions
 ): Promise<OdooFleetVehicleLogContract[]> {
   return odooFleetRepository.getContractVehiclesStats(options);
+}
+
+export async function getExpiringContracts(): Promise<OdooFleetVehicleLogContractExpiring[]> {
+  return odooFleetRepository.getExpiringContracts();
 }

@@ -18,13 +18,13 @@ import { sendNotificationSummarySafe } from '@/notifications/notification-summar
 import { sendBusinessNotificationSummarySafe } from '@/notifications/business-notification-summary.service.js';
 import { getEnv } from '@/config/env.js';
 
-const log = getLogger('jobs.handlers.notification');
+const log = getLogger('jobs.handlers.notification-recurrent');
 
 const env = getEnv();
 const contactNumber = env.CONTACT_NUMBER;
 const emailContactNumber = env.EMAIL_CONTACT_NUMBER;
 
-export const notificationHandler: CronJobHandler = async ({
+export const notificationRecurrentHandler: CronJobHandler = async ({
   job,
   config,
   runId,
@@ -33,7 +33,7 @@ export const notificationHandler: CronJobHandler = async ({
   signal,
 }) => {
   if (signal.aborted) {
-    log.warn({ jobKey: job.key, runId, msg: 'Notification handler aborted before start' });
+    log.warn({ jobKey: job.key, runId, msg: 'Notification recurrent handler aborted before start' });
     return;
   }
 
@@ -71,7 +71,7 @@ export const notificationHandler: CronJobHandler = async ({
     config,
     recipientsCount: recipients.length,
     expiringContractsCount: expiringContracts.length,
-    msg: 'Notification handler started',
+    msg: 'Notification recurrent handler started',
   });
 
   const whatsAppMessages: WhatsAppBulkMessageItem[] = [];
@@ -145,7 +145,7 @@ export const notificationHandler: CronJobHandler = async ({
     }
 
     const daysLeft = contract.days_left;
-    const scheduleType = 'main';
+    const scheduleType = 'recurring';
     const template = resolveWhatsAppTemplate(
       notificationTemplates,
       type,
@@ -240,7 +240,7 @@ export const notificationHandler: CronJobHandler = async ({
     whatsappFailed: bulkResult.failed,
     summaryEmailSent,
     businessSummaryEmailSent,
-    msg: 'Notification handler finished',
+    msg: 'Notification recurrent handler finished',
   });
 
   return {

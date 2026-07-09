@@ -107,7 +107,23 @@ POST /notifications
 EMAIL_PROVIDER=resend
 EMAIL_FROM=alerts@yourdomain.com
 RESEND_API_KEY=re_...
+CRASH_ALERT_EMAIL=ops@example.com
+BUSINESS_SUMMARY_EMAIL=negocio@example.com
 ```
+
+`BUSINESS_SUMMARY_EMAIL` is optional; merged with `CRASH_ALERT_EMAIL` for summary emails (deduplicated).
+
+## System email templates (cron / alerts)
+
+| Template | Service | Trigger |
+|----------|---------|---------|
+| `crash-alert` | `crash-alert.service.ts` | Fatal process error |
+| `notification-run-summary` | `notification-summary.service.ts` | Notification cron, >1 expiring contract |
+| `notification-business-summary` | `business-notification-summary.service.ts` | Notification cron, ≥1 expiring contract |
+
+Business summary HTML is authored in **leasing-m** (`emails/NotificationBusinessSummary.tsx`), exported via `pnpm emails:export`, and stored in Supabase migration `20260709000001_...`.
+
+See `docs/notificaciones-contratos.md` for the full contract notification flow.
 
 ## Add a new email template
 

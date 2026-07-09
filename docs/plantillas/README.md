@@ -53,7 +53,7 @@ erDiagram
         ↓
 3. (WhatsApp) Aprobar plantilla en Twilio y registrar content_sid
         ↓
-4. Probar envío con POST /notifications
+4. Probar envío con POST /notifications o POST /notifications/whatsapp/bulk (lotes)
 ```
 
 ## Guías detalladas
@@ -62,14 +62,18 @@ erDiagram
 2. [Email](./email.md) — alta y envío de plantillas email
 3. [WhatsApp](./whatsapp.md) — alta en Twilio, registro en DB y envío
 
-## Plantillas incluidas en la migración inicial
+## Plantillas incluidas en migraciones
 
-Tras aplicar la migración `20260701000001_create_notification_templates.sql`:
+Tras aplicar las migraciones de plantillas:
 
-| name | channel | clasificación | Notas |
-|------|---------|---------------|-------|
-| `crash-alert` | email | `system` | Alertas de crash del servicio |
-| `contract-status-review` | whatsapp | `contracts` | Requiere actualizar `content_sid` con el HX real de Twilio |
+| name | channel | clasificación | Migración | Notas |
+|------|---------|---------------|-----------|-------|
+| `crash-alert` | email | `system` | `20260701000001_...` | Alertas de crash del servicio |
+| `notification-run-summary` | email | `contracts` | `20260708000001_...` | Resumen operativo del cron (métricas WhatsApp) |
+| `notification-business-summary` | email | `contracts` | `20260709000001_...` | Resumen LMM interno (avisos + tablas por universo) |
+| `contract-status-review` | whatsapp | `contracts` | `20260701000001_...` | Requiere actualizar `content_sid` con el HX real de Twilio |
+
+El HTML de `notification-business-summary` se genera desde el repo **leasing-m** (`emails/NotificationBusinessSummary.tsx`) con `pnpm emails:export`. Ver [notificaciones-contratos.md](../notificaciones-contratos.md).
 
 ## Consultar plantillas existentes
 

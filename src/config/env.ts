@@ -10,6 +10,7 @@ const schema = z.object({
   EMAIL_FROM: z.string().email(),
   EMAIL_PROVIDER: z.enum(['resend']).default('resend'),
   CRASH_ALERT_EMAIL: z.string().min(1),
+  BUSINESS_SUMMARY_EMAIL: z.string().optional(),
   RESEND_API_KEY: z.string().min(1),
   SUPABASE_URL: z.string().url(),
   SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
@@ -22,6 +23,7 @@ const schema = z.object({
   CRON_SCHEDULER_ENABLED: z.coerce.boolean().default(false),
   CRON_SCHEDULER_RELOAD_INTERVAL_MS: z.coerce.number().int().positive().default(60_000),
   WHATSAPP_PROVIDER: z.enum(['twilio']).default('twilio'),
+  WHATSAPP_RATE_LIMIT_PER_SECOND: z.coerce.number().int().positive().default(65),
   TWILIO_ACCOUNT_SID: z.string().min(1),
   TWILIO_AUTH_TOKEN: z.string().min(1),
   TWILIO_WHATSAPP_FROM: z
@@ -33,6 +35,8 @@ const schema = z.object({
   TWILIO_VALIDATE_SIGNATURE: z.coerce.boolean().default(true),
   TWILIO_WEBHOOK_BASE_URL: z.string().url().optional(),
   WHATSAPP_REVISAR_KEYWORD: z.string().min(1).default('REVISAR'),
+  CONTACT_NUMBER: z.string().min(1),
+  EMAIL_CONTACT_NUMBER: z.string().min(1),
 });
 
 export type Env = z.infer<typeof schema>;

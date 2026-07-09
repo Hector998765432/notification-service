@@ -1,4 +1,5 @@
 import cron, { type ScheduledTask } from 'node-cron';
+import { formatLogError } from '@/logging/format-log-error.js';
 import { getLogger } from '@/logging/logger.js';
 import type { Env } from '@/config/env.js';
 import type { CronJobRepository } from '@/persistence/repositories/index.js';
@@ -81,7 +82,7 @@ export class DynamicCronScheduler {
     try {
       await this.reconcile();
     } catch (err) {
-      log.error({ err, msg: 'Dynamic cron scheduler reconciliation failed' });
+      log.error({ ...formatLogError(err), msg: 'Dynamic cron scheduler reconciliation failed' });
     }
   }
 

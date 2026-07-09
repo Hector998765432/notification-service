@@ -21,6 +21,7 @@ create table if not exists public.notification_templates (
   correlation_var   text,
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now(),
+  bulk              boolean not null default false,
   constraint notification_templates_name_channel_unique unique (name, channel),
   constraint notification_templates_channel_check check (channel in ('email', 'whatsapp')),
   constraint notification_templates_email_fields_check check (

@@ -1,6 +1,9 @@
 export type { Database, Json } from '@/types/supabase/database.types.js';
 export type {
   CompanyInsert,
+  CompanyMemberRow,
+  CompanyMemberUnitRow,
+  CompanyMemberWithUnits,
   CompanyRow,
   CompanyUpdate,
   CronJobInsert,
@@ -21,5 +24,8 @@ export type {
   NotificationTemplateInsert,
   NotificationTemplateRow,
   NotificationTemplateUpdate,
+  NotificationTemplateWithClassification,
   NotificationTemplateChannel,
+  NotificationOperator,
+  NotificationRecipient,
 } from '@/types/supabase/tables.js';

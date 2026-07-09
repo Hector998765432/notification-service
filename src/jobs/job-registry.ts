@@ -1,4 +1,5 @@
 import { notificationHandler } from '@/jobs/handlers/notification-handler.js';
+import { notificationRecurrentHandler } from '@/jobs/handlers/notification-recurrent.js';
 import type { CronJobHandler } from '@/types/jobs/index.js';
 
 export class JobRegistry {
@@ -33,6 +34,8 @@ export function createDefaultJobRegistry(): JobRegistry {
       message: 'No-op job executed successfully',
     },
   }));
+
+  registry.register('internal.notification-recurrent', notificationRecurrentHandler);
 
   registry.register('internal.notification', notificationHandler);
 

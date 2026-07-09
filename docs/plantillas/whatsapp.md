@@ -144,7 +144,7 @@ Confirma:
 
 ---
 
-## Paso 7 — Enviar un mensaje WhatsApp
+## Paso 7 — Enviar un mensaje WhatsApp (individual)
 
 ```bash
 curl -sS -X POST "$API_BASE/notifications" \
@@ -185,6 +185,68 @@ El servicio traduce internamente a:
   "contentVariables": { "1": "Juan Pérez", "2": "A1B2" }
 }
 ```
+
+---
+
+## Paso 7b — Enviar múltiples mensajes WhatsApp (bulk)
+
+Para enviar muchas notificaciones en una sola petición, usa `POST /notifications/whatsapp/bulk`. Cada elemento del arreglo `messages` tiene el mismo shape que el bloque `whatsapp` de `POST /notifications`. Si un elemento incluye varios destinatarios en `to`, se genera un envío por número.
+
+```bash
+curl -sS -X POST "$API_BASE/notifications/whatsapp/bulk" \
+  -H "content-type: application/json" \
+  -H "x-api-key: $SERVICE_API_KEY" \
+  -d '{
+    "messages": [
+      {
+        "to": ["+524424605508"],
+        "template": "auto-service-day-before",
+        "templateVars": {
+          "customerName": "Juan Pérez",
+          "serialEnding": "A1B2"
+        }
+      },
+      {
+        "to": ["+525512345678", "+525598765432"],
+        "template": "gps-renewal",
+        "templateVars": {
+          "customerName": "Ana López"
+        }
+      }
+    ]
+  }'
+```
+
+### Respuesta
+
+A diferencia de `POST /notifications` (que devuelve 502 si falla algún canal), el bulk siempre responde **200** con el desglose completo:
+
+```json
+{
+  "code": "WHATSAPP_BULK_SENT",
+  "success": true,
+  "data": {
+    "total": 3,
+    "succeeded": 2,
+    "failed": 1,
+    "results": [
+      { "to": "+524424605508", "template": "auto-service-day-before", "success": true, "providerId": "SM..." },
+      { "to": "+525512345678", "template": "gps-renewal", "success": true, "providerId": "SM..." },
+      { "to": "+525598765432", "template": "gps-renewal", "success": false, "error": "Missing template variable \"serialEnding\"" }
+    ]
+  }
+}
+```
+
+### Rate limit
+
+Todos los envíos WhatsApp (individual, bulk HTTP y cron jobs) comparten un rate limit estricto configurable:
+
+```env
+WHATSAPP_RATE_LIMIT_PER_SECOND=70
+```
+
+El servicio nunca inicia más de N mensajes por segundo en una ventana deslizante de 1000 ms. Los envíos bulk se procesan secuencialmente y el limiter controla el throughput automáticamente.
 
 ---
 
@@ -251,6 +313,8 @@ Cuando el usuario responde con el keyword configurado, el servicio busca el cont
 
 ## Envío desde código interno
 
+### Un mensaje (NotificationService)
+
 ```ts
 import { getNotificationService } from '@/bootstrap/create-services.js';
 
@@ -266,6 +330,61 @@ await getNotificationService().send({
   },
 });
 ```
+
+### Múltiples mensajes (WhatsAppBulkSendService)
+
+Para cron jobs u otros flujos que envían muchas notificaciones:
+
+```ts
+import { getWhatsAppBulkSendService } from '@/bootstrap/create-services.js';
+
+const result = await getWhatsAppBulkSendService().sendBulk(
+  [
+    {
+      to: '+5215512345678',
+      template: 'auto-service-day-before',
+      templateVars: { customerName: 'Juan', serialEnding: 'A1B2' },
+    },
+    {
+      to: '+525512345678',
+      template: 'gps-renewal',
+      templateVars: { customerName: 'Ana' },
+    },
+  ],
+  { signal }, // opcional: AbortSignal del cron job
+);
+
+// result: { total, succeeded, failed, results[] }
+```
+
+El handler `internal.notification` (`src/jobs/handlers/notification-handler.ts`) usa este servicio para notificar operadores con contratos próximos a vencer.
+
+### Arquitectura de envío
+
+```
+POST /notifications
+  → NotificationService → WhatsAppChannelHandler
+  → sendResolvedWhatsAppTemplate()
+  → RateLimitedWhatsAppProvider → TwilioWhatsAppProvider
+
+POST /notifications/whatsapp/bulk
+  → WhatsAppBulkSendService.sendBulk()
+  → sendResolvedWhatsAppTemplate() (por mensaje)
+  → RateLimitedWhatsAppProvider → TwilioWhatsAppProvider
+
+Cron internal.notification
+  → notification-handler → WhatsAppBulkSendService.sendBulk()
+  → (mismo camino que bulk HTTP)
+```
+
+| Componente | Ruta |
+|------------|------|
+| Rate limiter | `src/whatsapp/strict-rate-limiter.ts` |
+| Provider decorador | `src/whatsapp/rate-limited-whatsapp-provider.ts` |
+| Helper de envío | `src/whatsapp/send-whatsapp-template.ts` |
+| Bulk service | `src/whatsapp/whatsapp-bulk-send.service.ts` |
+| Validador bulk HTTP | `src/http/validators/whatsapp-bulk.validator.ts` |
+| Controller bulk HTTP | `src/http/controllers/whatsapp-bulk.controller.ts` |
 
 ---
 
@@ -321,6 +440,7 @@ curl -sS -X POST "$API_BASE/notifications" \
 [ ] POST /notification-templates exitoso
 [ ] content_sid real (no placeholder) verificado
 [ ] POST /notifications de prueba exitoso
+[ ] (Opcional) POST /notifications/whatsapp/bulk para lotes
 [ ] (Opcional) correlation_var + webhook inbound configurados
 ```
 

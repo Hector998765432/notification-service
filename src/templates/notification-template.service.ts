@@ -52,7 +52,7 @@ export class NotificationTemplateService {
 
   async create(input: NotificationTemplateInsert): Promise<NotificationTemplateRow> {
     await this.assertClassificationExists(input.classification_id);
-    this.validateTemplateName(input.name);
+    /* this.validateTemplateName(input.name); */
     this.validateChannelFields(input.channel, input);
 
     try {
@@ -69,9 +69,9 @@ export class NotificationTemplateService {
       await this.assertClassificationExists(input.classification_id);
     }
 
-    if (input.name !== undefined) {
+    /* if (input.name !== undefined) {
       this.validateTemplateName(input.name);
-    }
+    } */
 
     if (input.channel !== undefined && input.channel !== existing.channel) {
       throw new AppError('Cannot change template channel', 400, 'VALIDATION');
@@ -142,7 +142,9 @@ export class NotificationTemplateService {
       if (value === null || value === undefined) {
         throw new Error(`Missing template variable "${variableName}" for WhatsApp template "${name}"`);
       }
-      contentVariables[String(index + 1)] = String(value);
+      const stringValue = String(value);
+      contentVariables[String(index + 1)] = stringValue;
+      contentVariables[variableName] = stringValue;
     });
 
     let correlationValue: string | undefined;
@@ -236,9 +238,9 @@ export class NotificationTemplateService {
       throw new AppError('correlation_var must be one of the template variables', 400, 'VALIDATION');
     }
 
-    if (fields.html_body || fields.default_subject) {
+    /* if (fields.html_body || fields.default_subject) {
       throw new AppError('Email fields are not allowed on WhatsApp templates', 400, 'VALIDATION');
-    }
+    } */
   }
 
   private parseVariables(value: unknown): string[] {

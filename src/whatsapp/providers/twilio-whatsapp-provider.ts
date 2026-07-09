@@ -63,11 +63,13 @@ export class TwilioWhatsAppProvider implements WhatsAppProvider {
     try {
       const created = await this.client.messages.create(payload);
 
-      log.info({
-        sid: created.sid,
-        status: created.status,
-        to: created.to,
-        sender: messagingServiceSid
+    log.info({
+      sid: created.sid,
+      status: created.status,
+      to: created.to,
+      contentSid: message.contentSid,
+      contentVariables: message.contentVariables,
+      sender: messagingServiceSid
           ? { type: 'messagingService', sid: messagingServiceSid }
           : { type: 'from', number: from },
         from: created.from ?? undefined,

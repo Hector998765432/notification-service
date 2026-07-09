@@ -1,15 +1,9 @@
 import { getEnv } from '@/config/env.js';
 import { formatLogError } from '@/logging/format-log-error.js';
 import type { NotificationService } from '@/notifications/notification.service.js';
+import { parseEmailRecipients } from '@/notifications/parse-email-recipients.js';
 
 const CRASH_ALERT_TIMEOUT_MS = 5_000;
-
-function parseRecipients(value: string): string[] {
-  return value
-    .split(',')
-    .map((email) => email.trim())
-    .filter((email) => email.length > 0);
-}
 
 export async function sendCrashAlert(
   notificationService: NotificationService,
@@ -22,7 +16,7 @@ export async function sendCrashAlert(
   const payload = {
     channels: ['email' as const],
     email: {
-      to: parseRecipients(env.CRASH_ALERT_EMAIL),
+      to: parseEmailRecipients(env.CRASH_ALERT_EMAIL),
       template: 'crash-alert' as const,
       templateVars: {
         serviceName: 'notification-service',
