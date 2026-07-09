@@ -233,6 +233,33 @@ curl -sS -X POST "$API_BASE/notifications" \
 
 ---
 
+## Plantillas de sistema (email)
+
+Plantillas registradas por migración y usadas desde código interno:
+
+| `name` | Servicio | Cuándo se envía |
+|--------|----------|-----------------|
+| `crash-alert` | `crash-alert.service.ts` | Error fatal del proceso |
+| `notification-run-summary` | `notification-summary.service.ts` | Fin del cron de notificaciones si hay >1 contrato |
+| `notification-business-summary` | `business-notification-summary.service.ts` | Fin del cron si hay ≥1 contrato (resumen LMM) |
+
+Destinatarios de resúmenes: `CRASH_ALERT_EMAIL` + `BUSINESS_SUMMARY_EMAIL` (deduplicados).
+
+### Diseño visual (resumen de negocio)
+
+El correo `notification-business-summary` sigue el branding de **Leasing Mobile**:
+
+1. Componente React Email: `leasing-m/emails/NotificationBusinessSummary.tsx`
+2. Colores y logo: `leasing-m/emails/config.ts` (`#E6E0EB`, `#6A4A9B`, `im_logo.png`)
+3. Exportar HTML: `pnpm emails:export` en leasing-m → `emails/NotificationBusinessSummary.html`
+4. Placeholders en `{singleBraces}` para `applyTemplate` del notification-service
+
+Variables principales del resumen de negocio: `runDate`, `totalsHtml`, `thirtyDayMessagesHtml`, `thirtyDayTableHtml`, `oneDayMessagesHtml`, `oneDayTableHtml`, `expiredMessagesHtml`, `expiredTableHtml`, `jobKey`, `runId`, `environment`.
+
+Guía completa: [notificaciones-contratos.md](../notificaciones-contratos.md).
+
+---
+
 ## Solución de problemas
 
 | Mensaje / síntoma | Causa probable | Acción |

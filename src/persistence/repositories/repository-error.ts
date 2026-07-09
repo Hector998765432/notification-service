@@ -1,9 +1,6 @@
 export class RepositoryError extends Error {
-  constructor(
-    message: string,
-    readonly cause?: unknown
-  ) {
-    super(message);
+  constructor(message: string, cause?: unknown) {
+    super(message, cause !== undefined ? { cause } : undefined);
     this.name = 'RepositoryError';
   }
 }

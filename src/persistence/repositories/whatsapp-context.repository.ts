@@ -10,11 +10,28 @@ export type RecordOutboundInput = {
   messageSid?: string | null;
 };
 
-/** Strips `whatsapp:` and normalizes Mexican mobile E.164 (+521XXXXXXXXXX → +52XXXXXXXXXX). */
+/** Strips `whatsapp:` and normalizes to Mexican E.164 for outbound/inbound matching. */
 export function normalizePhone(phone: string): string {
-  const e164 = phone.trim().replace(/^whatsapp:/i, '');
-  const mexicoMobile = e164.match(/^\+521(\d{10})$/);
-  return mexicoMobile ? `+52${mexicoMobile[1]}` : e164;
+  const stripped = phone.trim().replace(/^whatsapp:/i, '');
+
+  if (/^\d{10}$/.test(stripped)) {
+    return `+52${stripped}`;
+  }
+
+  const mexicoMobile = stripped.match(/^\+521(\d{10})$/);
+  if (mexicoMobile) {
+    return `+52${mexicoMobile[1]}`;
+  }
+
+  if (stripped.startsWith('+')) {
+    return stripped;
+  }
+
+  if (/^\d+$/.test(stripped)) {
+    return `+${stripped}`;
+  }
+
+  return stripped;
 }
 
 export class WhatsAppContextRepository {

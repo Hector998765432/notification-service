@@ -42,6 +42,7 @@ export const createNotificationTemplateBodySchema = z
     content_sid: z.string().trim().min(1).optional(),
     variables: z.array(z.string().trim().min(1)).min(1).optional(),
     correlation_var: z.string().trim().min(1).optional(),
+    bulk: z.boolean().default(false)
   })
   .superRefine((data, ctx) => {
     if (data.channel === 'email') {
@@ -67,13 +68,13 @@ export const createNotificationTemplateBodySchema = z
           ctx.addIssue({ ...issue, path: issue.path });
         }
       }
-      if (data.html_body || data.default_subject) {
+      /* if (data.html_body || data.default_subject) {
         ctx.addIssue({
           code: 'custom',
           message: 'Email fields are not allowed on WhatsApp templates',
           path: ['channel'],
         });
-      }
+      } */
       if (data.correlation_var && data.variables && !data.variables.includes(data.correlation_var)) {
         ctx.addIssue({
           code: 'custom',
@@ -94,6 +95,7 @@ export const updateNotificationTemplateBodySchema = z
     content_sid: z.string().trim().min(1).optional(),
     variables: z.array(z.string().trim().min(1)).min(1).optional(),
     correlation_var: z.string().trim().min(1).nullable().optional(),
+    bulk: z.boolean().default(false).optional(),
   })
   .refine((value) => Object.keys(value).length > 0, {
     message: 'At least one field must be provided',

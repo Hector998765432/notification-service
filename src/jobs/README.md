@@ -369,8 +369,49 @@ Handlers listos para pruebas:
 
 ```text
 task_key = internal.noop
-task_key = internal.notification.test
+task_key = internal.notification
+task_key = internal.notification-recurrent
 ```
+
+### Job `internal.notification` / `internal.notification-recurrent`
+
+Notifica operadores con contratos próximos a vencer y envía correos de resumen internos.
+
+**`task_key`:** `internal.notification` (principal) · `internal.notification-recurrent` (recurrente)
+
+Flujo:
+
+1. Consulta contratos por vencer en Odoo (`getExpiringContracts`: `days_left` 30, 1 o ≤0).
+2. Resuelve destinatarios por VIN en plataforma (`findNotificationRecipients`).
+3. Excluye **Póliza de seguro** y **Gps** del envío WhatsApp (`filterNotifiableContracts`).
+4. Envía bulk (`global_bulk`) si hay 2+ contratos/VINs; si no, plantilla individual por `ContractType`.
+5. Envía WhatsApp en lote vía `WhatsAppBulkSendService` (rate limit `WHATSAPP_RATE_LIMIT_PER_SECOND`).
+6. Correo operativo `notification-run-summary` si hay >1 contrato.
+7. Correo de negocio LMM `notification-business-summary` si hay ≥1 contrato.
+
+Metadata de ejecución en `cron_job_runs`:
+
+```json
+{
+  "recipients_count": 45,
+  "whatsapp_total": 38,
+  "whatsapp_succeeded": 37,
+  "whatsapp_failed": 1,
+  "skipped_without_phone": 2,
+  "skipped_without_contract": 1,
+  "skipped_excluded_contract_types": 4,
+  "skipped_without_template": 0,
+  "skipped_without_expiration_date": 0,
+  "summary_email_sent": true,
+  "business_summary_email_sent": true
+}
+```
+
+Variables de entorno relacionadas: `CRASH_ALERT_EMAIL`, `BUSINESS_SUMMARY_EMAIL`, `CONTACT_NUMBER`, `EMAIL_CONTACT_NUMBER`.
+
+Código: `src/jobs/handlers/notification-handler.ts`, `src/jobs/handlers/notification-recurrent.ts`.
+
+Documentación detallada: [docs/notificaciones-contratos.md](../docs/notificaciones-contratos.md).
 
 Crear por API:
 

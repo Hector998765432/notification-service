@@ -11,6 +11,10 @@ import {
   type NotificationService,
 } from '@/notifications/notification.service.js';
 import {
+  createWhatsAppBulkSendService,
+  type WhatsAppBulkSendService,
+} from '@/whatsapp/whatsapp-bulk-send.service.js';
+import {
   createCronJobRuntime,
   createDynamicCronScheduler,
   type DynamicCronScheduler,
@@ -36,6 +40,7 @@ let notificationTemplateRepository: NotificationTemplateRepository | null = null
 let templateClassificationService: TemplateClassificationService | null = null;
 let notificationTemplateService: NotificationTemplateService | null = null;
 let notificationService: NotificationService | null = null;
+let whatsAppBulkSendService: WhatsAppBulkSendService | null = null;
 let dynamicCronScheduler: DynamicCronScheduler | null = null;
 let cronJobService: CronJobService | null = null;
 
@@ -104,6 +109,17 @@ export function getNotificationService(): NotificationService {
     );
   }
   return notificationService;
+}
+
+export function getWhatsAppBulkSendService(): WhatsAppBulkSendService {
+  if (!whatsAppBulkSendService) {
+    whatsAppBulkSendService = createWhatsAppBulkSendService(
+      getWhatsAppProvider(),
+      getNotificationTemplateService(),
+      getWhatsAppContextRepository(),
+    );
+  }
+  return whatsAppBulkSendService;
 }
 
 export function getDynamicCronScheduler(): DynamicCronScheduler {

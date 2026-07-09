@@ -1,0 +1,37 @@
+Servicio automotriz
+30 días antes (LMM - interno):
+Aviso interno: el servicio automotriz del activo (nombre del activo), serie (numero de serie), del cliente (cliente) vence el (fecha). Favor de dar seguimiento.
+
+Póliza de seguro
+30 días antes (LMM - interno):
+Aviso interno: la póliza de seguro del activo (nombre del activo), serie (numero de serie), del cliente (cliente) vence el (fecha).
+
+Tenencia anual
+30 días antes (LMM - interno):
+Aviso interno: la tenencia anual del activo (nombre del activo), serie (numero de serie), del cliente (cliente) vence el (fecha).
+Día antes (LMM - interno):
+Aviso interno: mañana (fecha) vence la tenencia anual del activo (nombre del activo) del cliente (cliente).
+
+GPS (interno para administrador, no se envía al cliente)
+30 días antes (LMM):
+Aviso interno: el dispositivo GPS del activo (nombre del activo), serie (numero de serie), del cliente (cliente) requiere atención antes del (fecha).
+Día antes (LMM):
+Aviso interno: mañana (fecha) vence el plazo de atención del GPS del activo (nombre del activo), cliente (cliente).
+
+Verificación vehicular:
+30 días antes (LMM - interno):
+Aviso interno: la verificación vehicular del activo (nombre del activo), cliente (cliente), vence el (fecha).
+Día antes (LMM - interno):
+Aviso interno: mañana (fecha) vence el plazo de verificación vehicular del activo (nombre del activo), cliente (cliente).
+
+Leasing:
+30 días antes (LMM - interno):
+Aviso interno: el contrato de leasing del activo (nombre del activo), cliente (cliente), vence el (fecha). Pendiente confirmar si se renueva o se recupera el activo.
+Día antes (LMM - interno):
+Aviso interno: mañana (fecha) vence el contrato de leasing del activo (nombre del activo), cliente (cliente). Confirmar estatus de renovación o recuperación.
+
+Tarjeta de circulación
+30 días antes (LMM - interno):
+Aviso interno: la tarjeta de circulación del activo (nombre del activo), cliente (cliente), vence el (fecha).
+Día antes (LMM - interno):
+Aviso interno: mañana (fecha) vence la tarjeta de circulación del activo (nombre del activo), cliente (cliente).

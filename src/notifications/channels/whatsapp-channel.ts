@@ -1,4 +1,3 @@
-import { getLogger } from '@/logging/logger.js';
 import type { NotificationChannelHandler } from '@/notifications/channels/notification-channel.js';
 import type {
   NotificationChannelResult,
@@ -6,9 +5,8 @@ import type {
 } from '@/notifications/types.js';
 import type { WhatsAppContextRepository } from '@/persistence/repositories/whatsapp-context.repository.js';
 import type { NotificationTemplateService } from '@/templates/notification-template.service.js';
+import { sendResolvedWhatsAppTemplate } from '@/whatsapp/send-whatsapp-template.js';
 import type { WhatsAppProvider } from '@/whatsapp/whatsapp-provider.js';
-
-const log = getLogger('notifications.whatsapp');
 
 export class WhatsAppChannelHandler implements NotificationChannelHandler {
   readonly channel = 'whatsapp' as const;
@@ -30,22 +28,19 @@ export class WhatsAppChannelHandler implements NotificationChannelHandler {
         throw new Error('WhatsApp channel requires a template');
       }
 
-      const templateVars = whatsAppConfig.templateVars ?? {};
-      const { contentSid, contentVariables, correlationValue } =
-        await this.templateService.resolveWhatsAppTemplate(whatsAppConfig.template, templateVars);
-
       const providerIds: string[] = [];
       for (const recipient of whatsAppConfig.to) {
-        const result = await this.whatsAppProvider.send({
-          to: this.normalizeRecipient(recipient),
-          contentSid,
-          contentVariables,
+        const messageId = await sendResolvedWhatsAppTemplate({
+          provider: this.whatsAppProvider,
+          templateService: this.templateService,
+          contextRepository: this.contextRepository,
+          to: recipient,
+          template: whatsAppConfig.template,
+          templateVars: whatsAppConfig.templateVars,
         });
-        if (result.id) {
-          providerIds.push(result.id);
+        if (messageId) {
+          providerIds.push(messageId);
         }
-
-        await this.recordContext(recipient, whatsAppConfig.template, correlationValue, result.id);
       }
 
       return {
@@ -60,37 +55,5 @@ export class WhatsAppChannelHandler implements NotificationChannelHandler {
         error: err instanceof Error ? err.message : String(err),
       };
     }
-  }
-
-  private async recordContext(
-    recipient: string,
-    template: string,
-    correlationValue: string | undefined,
-    messageSid: string | undefined,
-  ): Promise<void> {
-    if (!this.contextRepository || !correlationValue) {
-      return;
-    }
-
-    try {
-      await this.contextRepository.recordOutbound({
-        phone: recipient,
-        serialEnding: correlationValue,
-        template,
-        messageSid: messageSid ?? null,
-      });
-    } catch (err) {
-      log.warn({
-        recipient,
-        template,
-        err: err instanceof Error ? err.message : String(err),
-        msg: 'Failed to record WhatsApp message context',
-      });
-    }
-  }
-
-  private normalizeRecipient(recipient: string): string {
-    const trimmed = recipient.trim();
-    return trimmed.startsWith('whatsapp:') ? trimmed : `whatsapp:${trimmed}`;
   }
 }

@@ -4,6 +4,10 @@ export type {
 } from '@/persistence/repositories/base.repository.js';
 export { CompaniesRepository } from '@/persistence/repositories/companies.repository.js';
 export {
+  CompanyMembersRepository,
+  companyMembersRepository,
+} from '@/persistence/repositories/company-members.repository.js';
+export {
   CronJobRepository,
   type CompleteCronJobRunInput,
 } from '@/persistence/repositories/cron-job.repository.js';

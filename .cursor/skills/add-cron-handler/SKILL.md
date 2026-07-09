@@ -84,6 +84,8 @@ export const myJobHandler: CronJobHandler = async ({
 - **No secrets in `config`** — use env vars (`getEnv()`).
 - **Return useful `metadata`** for auditing in `cron_job_runs`.
 - **Odoo jobs** — use `src/db/odoo/*`; **Supabase** — use `src/persistence/repositories/*`.
+- **Bulk WhatsApp jobs** — use `getWhatsAppBulkSendService().sendBulk()` from `@/bootstrap/create-services.js`; rate limit is enforced automatically via `WHATSAPP_RATE_LIMIT_PER_SECOND` (default 70). See `internal.notification` handler as reference.
+- **Summary emails from cron** — use `sendNotificationSummarySafe` / `sendBusinessNotificationSummarySafe` from `@/notifications/`; require `CRASH_ALERT_EMAIL` and optional `BUSINESS_SUMMARY_EMAIL`. See `docs/notificaciones-contratos.md`.
 - Imports must use `.js` extension (NodeNext): `@/jobs/foo.js`.
 
 ## Step 2 — Register in JobRegistry

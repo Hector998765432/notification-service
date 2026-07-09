@@ -5,7 +5,14 @@ import type {
   NotificationTemplateInsert,
   NotificationTemplateRow,
   NotificationTemplateUpdate,
+  NotificationTemplateWithClassification,
 } from '@/types/supabase/index.js';
+
+type NotificationTemplateQueryRow = NotificationTemplateRow & {
+  template_classifications: {
+    name: string;
+  } | null;
+};
 import type { PaginatedResult } from '@/persistence/repositories/cron-job.repository.js';
 import { RepositoryError } from '@/persistence/repositories/repository-error.js';
 
@@ -37,19 +44,45 @@ export class NotificationTemplateRepository {
   async findByNameAndChannel(
     name: string,
     channel: NotificationTemplateChannel,
+    bulk?: boolean,
   ): Promise<NotificationTemplateRow | null> {
-    const { data, error } = await this.client
+    let query = this.client
       .from('notification_templates')
       .select('*')
       .eq('name', name)
-      .eq('channel', channel)
-      .maybeSingle();
+      .eq('channel', channel);
+
+    if (bulk !== undefined) {
+      query = query.eq('bulk', bulk);
+    }
+
+    const { data, error } = await query.maybeSingle();
 
     if (error) {
       throw new RepositoryError(`Unable to load notification template ${name} (${channel})`, error);
     }
 
     return data;
+  }
+
+  async findAll(): Promise<NotificationTemplateWithClassification[]> {
+    const { data, error } = await this.client
+      .from('notification_templates')
+      .select(`
+        *,
+        template_classifications ( name )
+      `);
+
+    if (error) {
+      throw new RepositoryError('Unable to load notification templates', error);
+    }
+
+    return (data as unknown as NotificationTemplateQueryRow[]).map(
+      ({ template_classifications, ...template }) => ({
+        ...template,
+        classificationName: template_classifications?.name ?? '',
+      }),
+    );
   }
 
   async listPaginated(
@@ -60,8 +93,9 @@ export class NotificationTemplateRepository {
 
     let query = this.client
       .from('notification_templates')
-      .select('*', { count: 'exact' })
-      .order('name', { ascending: true });
+      .select('*,template_classifications ( name )', { count: 'exact' })
+      .order('name', { ascending: true })
+      .order('created_at', { ascending: false });
 
     if (input.channel !== undefined) {
       query = query.eq('channel', input.channel);
